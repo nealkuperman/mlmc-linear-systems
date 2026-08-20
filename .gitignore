@@ -8,3 +8,22 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Type-checker and linter caches
+.mypy_cache/
+.pyright/
+.ruff_cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Operating system files
+.DS_Store
