@@ -7,7 +7,7 @@ import pytest
 from scipy import sparse
 from scipy.sparse.linalg import aslinearoperator
 
-from src.linear_solver.linear_solver import (
+from mlmc_linear_systems.linear_solver import (
     LinearSystem,
     cg_solve,
     direct_solve,
