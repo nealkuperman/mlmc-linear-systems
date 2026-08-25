@@ -73,7 +73,10 @@ class MultilevelModel(Protocol[RandomnessT, ModelInputT]):
 
     @property
     def number_of_levels(self) -> int:
-        """Number of levels available to the MLMC runner."""
+        """Number of available levels.
+
+        Valid level indices are 0 through number_of_levels - 1.
+        """
         ...
 
     def sample_randomness(

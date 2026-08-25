@@ -47,7 +47,7 @@ class LinearSystem:
     x0: np.ndarray | None = None
 
 @dataclass
-class SolveResult:
+class LinearSolveResult:
     """Information returned by a linear solve."""
 
     solution: np.ndarray
@@ -292,7 +292,7 @@ def direct_solve(
     b: np.ndarray,
     *,
     x0: np.ndarray | None = None,
-) -> SolveResult:
+) -> LinearSolveResult:
     r"""Solve a linear system A x = b using the direct solver.
 
     Parameters
@@ -307,7 +307,7 @@ def direct_solve(
 
     Returns
     -------
-    SolveResult
+    LinearSolveResult
          The solution and diagnostic information.
 
     Raises
@@ -352,7 +352,7 @@ def direct_solve(
         else "Direct solve produced nonfinite values."
     )
 
-    return SolveResult(
+    return LinearSolveResult(
         solution=solution,
         success=success,
         solver_name="direct",
@@ -374,7 +374,7 @@ def cg_solve(
     absolute_tolerance: float = 0.0,
     maximum_iterations: int | None = None,
     record_residual_history: bool = False,
-) -> SolveResult:
+) -> LinearSolveResult:
     """Solve A x = b with conjugate gradients (SPD matrices).
 
     Parameters
@@ -399,7 +399,7 @@ def cg_solve(
 
     Returns
     -------
-    SolveResult
+    LinearSolveResult
     """
     if relative_tolerance < 0.0 or absolute_tolerance < 0.0:
         raise ValueError("Solver tolerances must be nonnegative.")
@@ -465,7 +465,7 @@ def cg_solve(
         success = False
         message = f"CG failed with numerical breakdown (info={info})."
 
-    return SolveResult(
+    return LinearSolveResult(
         solution=solution,
         success=success,
         solver_name="cg",
@@ -495,7 +495,7 @@ def solve_linear_system(
     maximum_iterations: int | None = None,
     gmres_restart: int | None = None,
     record_residual_history: bool = False,
-) -> SolveResult:
+) -> LinearSolveResult:
     """
     Solve one linear system A x = b.
 
