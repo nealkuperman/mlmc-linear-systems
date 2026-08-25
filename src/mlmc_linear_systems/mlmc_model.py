@@ -1,4 +1,4 @@
-"""Interfaces implemented by user-supplied multilevel models.
+"""Interfaces implemented by user-supplied MLMC models.
 
 For a correction whose fine level is greater than zero, the runner performs:
 
@@ -70,6 +70,11 @@ class MultilevelModel(Protocol[RandomnessT, ModelInputT]):
     methods, solves the resulting systems, forms corrections, and
     accumulates statistics.
     """
+
+    @property
+    def number_of_levels(self) -> int:
+        """Number of levels available to the MLMC runner."""
+        ...
 
     def sample_randomness(
         self,
