@@ -36,3 +36,47 @@
 
 - [ ] Test that changing one level's sample count does not alter the random
       samples assigned to another level.
+
+#### Parallel worker and model boundary
+
+- [ ] Keep fine and coarse evaluations for one correction in the same worker.
+      The worker must call `compute_sample_correction()` once so both
+      evaluations use the same coupled random realization.
+
+- [ ] Do not naively send the complete model with every process-pool task.
+      Passing `model` to `compute_sample_correction()` is only an ordinary
+      reference in serial or threaded execution, but process-based execution
+      may serialize it for every submitted task.
+
+- [ ] Initialize or construct the model once per worker process and reuse that
+      worker-local model for multiple correction samples.
+
+- [ ] Keep individual process task payloads lightweight. A task should be
+      identified primarily by `(fine_level, sample_index, base_seed)` rather
+      than carrying meshes, matrices, solver state, or solution arrays.
+
+- [ ] Document and test the parallel model contract. User models and solver
+      backends may contain non-picklable objects or mutable state and may not
+      be thread-safe. Process workers may therefore need a model factory or
+      worker initializer instead of a serialized model instance.
+
+- [ ] Avoid returning complete `SampleCorrection` objects from process
+      workers by default. They contain fine and coarse `LinearSolveResult`
+      objects and potentially large solution arrays that would be serialized
+      and copied back to the main process.
+
+- [ ] Introduce a lightweight parallel result summary containing only the
+      correction level, sample index, correction value, and elapsed time.
+      Keep the full `SampleCorrection` available for serial calls, debugging,
+      and optional solver diagnostics.
+
+- [ ] Extract the lightweight summary inside the worker and discard fine and
+      coarse solution arrays before returning the result to the main process.
+
+- [ ] Verify that serial and parallel runs assign identical correction values
+      to every `(level, sample_index)` task. Timing values are not expected to
+      match.
+
+- [ ] Benchmark worker initialization, duplicated model memory, task
+      serialization, and result-transfer overhead before selecting a process,
+      thread, or batching strategy.
