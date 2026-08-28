@@ -37,6 +37,47 @@
 - [ ] Test that changing one level's sample count does not alter the random
       samples assigned to another level.
 
+### MLMC timing and cost semantics
+
+- [ ] Preserve the existing per-correction cost measurement used by
+      `LevelStatistics`. `SampleCorrection.elapsed_time` currently measures
+      the model work from `sample_randomness()` through the final fine or
+      coarse quantity-of-interest evaluation. This is the appropriate level
+      cost for variance-and-cost-based MLMC sample allocation.
+
+- [ ] Clarify or rename `MLMCResult.total_cost` to
+      `total_correction_cost`. It is the sum of successful correction
+      evaluation times, not the complete wall-clock duration experienced by
+      the user.
+
+- [ ] Add a separate runner-level cumulative wall-time measurement covering
+      sample RNG construction, task scheduling or serial loop overhead,
+      correction evaluation, and statistics accumulation for `run_fixed()`
+      and every later `add_samples()` batch.
+
+- [ ] Decide whether `MLMCResult` should expose only cumulative runner wall
+      time or both `total_wall_time` and `last_batch_wall_time`. Returned
+      snapshots must remain immutable after additional batches are run.
+
+- [ ] Define and document whether validation, level-statistics
+      initialization, result-snapshot construction, and time spent in failed
+      batches belong in runner wall time. Use `try/finally` if failed work
+      must contribute to the operational timing record.
+
+- [ ] Do not add `LinearSolveResult.solve_time` to correction cost. Solver
+      calls are already inside `SampleCorrection.elapsed_time`, so doing so
+      would double-count solve work.
+
+- [ ] Preserve the distinction under parallel execution:
+  - total correction cost is the sum of individual successful task times;
+  - runner wall time is the actual elapsed execution time;
+  - total correction cost may be larger than wall time when tasks overlap.
+
+- [ ] Add timing tests using a controlled or mocked clock. Verify initial and
+      additional-batch accumulation, immutable snapshots, failure behavior,
+      and the distinction between summed correction work and runner wall
+      time without relying on real sleeps.
+
 #### Parallel worker and model boundary
 
 - [ ] Keep fine and coarse evaluations for one correction in the same worker.
