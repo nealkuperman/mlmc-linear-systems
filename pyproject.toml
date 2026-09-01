@@ -12,6 +12,11 @@ dependencies = [
     "scipy>=1.18.0",
 ]
 
+[project.optional-dependencies]
+ngsolve = [
+    "ngsolve>=6.2.2606",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
